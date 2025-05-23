@@ -340,12 +340,12 @@ export default class authService {
         <div style="padding: 1% 5%;">
         <h3>Dear Guide Teacher,</h3>
         
-        <p>Your One-Time Password (OTP) to register yourself as a guide teacher in School Innovation Marathon (SIM 24-25) is <b>${otp}</b></p>
+        <p>Your One-Time Password (OTP) to register yourself as a guide teacher in School Innovation Development Project (SIDP 25) is <b>${otp}</b></p>
         
         <p>We appreciate for your interest in inspiring students to solve problems with simplified design thinking process as a method to innovate through this program.</p>
         <p>
         <strong>
-        Regards,<br> SIM Team
+        Regards,<br> SIDP Team
         </strong>
         </div></body>`
         const forgotPassData = `
@@ -353,19 +353,19 @@ export default class authService {
         <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
         <div style="padding: 1% 5%;">
         <h3>Dear Guide Teacher,</h3>
-        <p>Your temporary password to login to School Innovation Marathon platform is <b>${otp}.</b></p>
+        <p>Your temporary password to login to School Innovation Development Project platform is <b>${otp}.</b></p>
         <p>Change your password as per your preference after you login with temporary password.</p>
-        <p><strong>Link: https://schoolinnovationmarathon.org/login</strong></p>
+        <p><strong>Link: https://sidp.editn.in//login</strong></p>
         <p>
         <strong>
-        Regards,<br> SIM Team
+        Regards,<br> SIDP Team
         </strong>
         </p>
         </div></body>`
-        const verifyOtpSubject = `OTP to register for School Innovation Marathon (SIM 24-25)`
-        const forgotPassSubjec = `Temporary Password to Login into School Innovation Marathon (SIM 24-25)`
-        const fullSubjec = `Welcome! Your School Innovation Marathon (SIM 24-25) registration was successful. Check out your login details.`
-        const teamsCredentials = `SIM 2024 - Teams Credentials`
+        const verifyOtpSubject = `OTP to register for School Innovation Development Project (SIDP 25)`
+        const forgotPassSubjec = `Temporary Password to Login into School Innovation Development Project (SIDP 25)`
+        const fullSubjec = `Welcome! Your School Innovation Development Project (SIDP 25) registration was successful. Check out your login details.`
+        const teamsCredentials = `SIDP 2025 - Teams Credentials`
         let proxyAgent = new HttpsProxyAgent('http://10.236.241.101:9191');
         if (process.env.ISAWSSERVER === 'YES') {
             AWS.config.update({
@@ -499,7 +499,7 @@ export default class authService {
             <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
             <div style="padding: 1% 5%;">
             <h3>Dear Guide Teacher,</h3>
-            <h4>Congratulations for successfully registering for School Innovation Marathon 24-25</h4>
+            <h4>Congratulations for successfully registering for School Innovation Development Project 24-25</h4>
             <p>Your schools has been successfully registered with the following details :
             <br> School name: <strong> ${school_name}</strong> <br> UDISE CODE:<strong> ${udise_code}</strong>
             <br> District:<strong> ${district}</strong>
@@ -513,8 +513,8 @@ export default class authService {
             </strong> <br>
             Mobile no: <strong> ${mobile} </strong>
             <p>Please use your user id and password to login and proceed further.</p>
-            <p><strong>Link: https://schoolinnovationmarathon.org/login</strong></p>
-            <p><strong>Regards,<br> SIM Team</strong></p>
+            <p><strong>Link: https://sidp.editn.in//login</strong></p>
+            <p><strong>Regards,<br> SIDP Team</strong></p>
             </div></body>`
             const otp = await this.triggerEmail(email, 2, WelcomeTemp);
             if (otp instanceof Error) {
@@ -860,7 +860,7 @@ export default class authService {
                         ${textBody}
                         <br>
                         <strong>
-                        Regards,<br> SIM Team
+                        Regards,<br> SIDP Team
                         </strong>
                         </div>
                         <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/sim_footer.jpg" alt="footer" style="width: 100%;" />
@@ -929,8 +929,8 @@ export default class authService {
 <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
 <div style="padding: 1% 5%;">
     <h3>Dear Guide Teacher,</h3>
-    <p>Greetings from School Innovation Marathom 2024. Here are your <strong>SIM student teams credentials</strong> for your reference.</p>
-    <p><strong>Team login URL : https://schoolinnovationmarathon.org/login</strong></p>
+    <p>Greetings from School Innovation Development Project 2025. Here are your <strong>SIDP student teams credentials</strong> for your reference.</p>
+    <p><strong>Team login URL : https://sidp.editn.in//login</strong></p>
     <table>
         <tr>
             <th>SL No</th>
@@ -941,7 +941,7 @@ export default class authService {
         ${allstring}
     </table>
     <strong>
-        Regards,<br> SIM Team
+        Regards,<br> SIDP Team
         </strong>
 </div>
 </body>

@@ -429,7 +429,7 @@ export default class TeamController extends BaseController {
 
             const paddingvalue = result.dataValues.team_id.toString().padStart(5, '0')
             const userplayload = {
-                username: `SIM${paddingvalue}`,
+                username: `SIDP${paddingvalue}`,
                 password: cryptoEncryptedString,
                 role: "TEAM",
                 full_name: payload.team_name
