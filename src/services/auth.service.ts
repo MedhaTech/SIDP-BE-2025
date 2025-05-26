@@ -336,7 +336,7 @@ export default class authService {
         const result: any = {}
         const otp: any = Math.random().toFixed(6).substr(-6);
         const verifyOtpdata = `<body style="border: solid;margin-right: 15%;margin-left: 15%; ">
-        <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
+        <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Untitled+design.jpg" alt="header" style="width: 100%;" />
         <div style="padding: 1% 5%;">
         <h3>Dear Guide Teacher,</h3>
         
@@ -350,7 +350,7 @@ export default class authService {
         </div></body>`
         const forgotPassData = `
         <body style="border: solid;margin-right: 15%;margin-left: 15%; ">
-        <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
+        <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Untitled+design.jpg" alt="header" style="width: 100%;" />
         <div style="padding: 1% 5%;">
         <h3>Dear Guide Teacher,</h3>
         <p>Your temporary password to login to School Innovation Development Project platform is <b>${otp}.</b></p>
@@ -496,7 +496,7 @@ export default class authService {
             let word = myArray[0];
             const WelcomeTemp = `
             <body style="border: solid;margin-right: 15%;margin-left: 15%; ">
-            <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
+            <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Untitled+design.jpg" alt="header" style="width: 100%;" />
             <div style="padding: 1% 5%;">
             <h3>Dear Guide Teacher,</h3>
             <h4>Congratulations for successfully registering for School Innovation Development Project 24-25</h4>
@@ -855,7 +855,7 @@ export default class authService {
                     Html: {
                         Charset: "UTF-8",
                         Data: `<body style="border: solid;margin-right: 15%;margin-left: 15%; ">
-                        <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
+                        <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Untitled+design.jpg" alt="header" style="width: 100%;" />
                         <div style="padding: 1% 5%;">
                         ${textBody}
                         <br>
@@ -926,7 +926,7 @@ export default class authService {
     </style>
 </head>
 <body style="border: solid;margin-right: 15%;margin-left: 15%;">
-<img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Email1SIM_2024.png.jpg" alt="header" style="width: 100%;" />
+<img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Untitled+design.jpg" alt="header" style="width: 100%;" />
 <div style="padding: 1% 5%;">
     <h3>Dear Guide Teacher,</h3>
     <p>Greetings from School Innovation Development Project 2025. Here are your <strong>SIDP student teams credentials</strong> for your reference.</p>
