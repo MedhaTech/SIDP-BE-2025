@@ -17,6 +17,7 @@ import { evaluator_rating } from "../models/evaluator_rating.model";
 import { baseConfig } from "../configs/base.config";
 import { evaluator } from "../models/evaluator.model";
 import isodate from 'iso8601-duration';
+import fetch, { RequestInit } from 'node-fetch';
 import { HttpsProxyAgent } from "https-proxy-agent";
 import path from "path";
 
@@ -1730,25 +1731,27 @@ export default class ChallengeResponsesController extends BaseController {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
             const id = newREQQuery.id
-            const urlStatus = `https://www.googleapis.com/youtube/v3/videos?part=status&id=${id}&key=AIzaSyCeghHKYFnQQSapJYDmNDc3LRFye41MQkw`
-            const videoStatus = await fetch(urlStatus, {
+            let proxyAgent = new HttpsProxyAgent('http://10.236.241.101:9191');
+            const options: RequestInit & { agent?: any } = {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
-            });
-
-            const videoStatusresult = await videoStatus.json();
+                },
+                agent: proxyAgent,
+            };
+            const options2 = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            const urlStatus = `https://www.googleapis.com/youtube/v3/videos?part=status&id=${id}&key=AIzaSyCeghHKYFnQQSapJYDmNDc3LRFye41MQkw`
+            const videoStatus = await fetch(urlStatus, process.env.ISAWSSERVER === 'YES' ? options2 : options);
+            const videoStatusresult: any = await videoStatus.json();
             if (videoStatusresult.items.length > 0 && videoStatusresult.items[0].status.privacyStatus === 'public') {
                 const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${id}&key=AIzaSyCeghHKYFnQQSapJYDmNDc3LRFye41MQkw`
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                const result = await response.json();
+                const response = await fetch(url, process.env.ISAWSSERVER === 'YES' ? options2 : options);
+                const result: any = await response.json();
                 if (result.items.length > 0) {
                     const duration: any = isodate.parse(result.items[0].contentDetails.duration)
                     const durationInSeconds = duration.seconds + (duration.minutes * 60) + (duration.hours * 3600);
