@@ -9,7 +9,7 @@ export class resource extends Model<InferAttributes<resource>, InferCreationAttr
     declare role: string;
     declare type: string;
     declare attachments: string;
-    declare state: string;
+    declare district: string;
     declare status: Enumerator;
     declare created_by: number;
     declare created_at: Date;
@@ -27,7 +27,7 @@ export class resource extends Model<InferAttributes<resource>, InferCreationAttr
             type: DataTypes.STRING,
             allowNull: true
         },
-        state: {
+        district: {
             type: DataTypes.STRING,
             allowNull: true
         },

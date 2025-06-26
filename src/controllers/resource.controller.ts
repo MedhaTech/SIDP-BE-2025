@@ -39,12 +39,12 @@ export default class ResourceController extends BaseController {
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            let { role, state, type } = newREQQuery;
+            let { role, district, type } = newREQQuery;
             let data: any = {}
             const where: any = {};
             where[`status`] = "ACTIVE";
-            if (state !== 'All States' && state !== undefined) {
-                where[`state`] = state
+            if (district !== 'All Districts' && district !== undefined) {
+                where[`district`] = district
             }
             if (role !== 'All roles' && role !== undefined) {
                 where[`role`] = role;
@@ -60,14 +60,14 @@ export default class ResourceController extends BaseController {
                         "role",
                         "type",
                         "attachments",
-                        "state"
+                        "district"
                     ],
                     where: [where],
                     order: [['resource_id', 'DESC']]
                 })
             }
-            else if (type === 'state') {
-                where[`state`] = state
+            else if (type === 'district') {
+                where[`district`] = district
                 data = await this.crudService.findAll(resource, {
                     attributes: [
                         "resource_id",
@@ -75,7 +75,7 @@ export default class ResourceController extends BaseController {
                         "role",
                         "type",
                         "attachments",
-                        "state"
+                        "district"
                     ],
                     where: [where],
                     order: [['resource_id', 'DESC']]
@@ -89,13 +89,13 @@ export default class ResourceController extends BaseController {
                         "role",
                         "type",
                         "attachments",
-                        "state"
+                        "district"
                     ],
                     where: [where],
                     order: [['resource_id', 'DESC']]
                 })
                 if (data.length <= 0) {
-                    where[`state`] = "All States"
+                    where[`district`] = "All Districts"
                     data = await this.crudService.findAll(resource, {
                         attributes: [
                             "resource_id",
@@ -103,7 +103,7 @@ export default class ResourceController extends BaseController {
                             "role",
                             "type",
                             "attachments",
-                            "state"
+                            "district"
                         ],
                         where: [where],
                         order: [['resource_id', 'DESC']]

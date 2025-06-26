@@ -11,7 +11,7 @@ export class latest_news extends Model<InferAttributes<latest_news>, InferCreati
     declare file_name: string;
     declare status: Enumerator;
     declare new_status: Enumerator;
-    declare state: string;
+    declare district: string;
     declare created_by: number;
     declare created_at: Date;
     declare updated_by: number;
@@ -40,7 +40,7 @@ export class latest_news extends Model<InferAttributes<latest_news>, InferCreati
             type: DataTypes.TEXT('long'),
             allowNull: true
         },
-        state: {
+        district: {
             type: DataTypes.STRING,
             allowNull: true
         },

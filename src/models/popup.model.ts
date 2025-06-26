@@ -10,7 +10,7 @@ export class popup extends Model<InferAttributes<popup>, InferCreationAttributes
     declare file: string;
     declare youtube: string;
     declare image: string;
-    declare state: string;
+    declare district: string;
     declare role: string;
     declare navigate: string;
     declare status: Enumerator;
@@ -54,7 +54,7 @@ export class popup extends Model<InferAttributes<popup>, InferCreationAttributes
             type: DataTypes.STRING,
             allowNull: true
         },
-        state: {
+        district: {
             type: DataTypes.STRING,
             allowNull: true
         },

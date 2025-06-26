@@ -312,11 +312,12 @@ export default class authService {
                 if (mentor_data) {
                     throw badRequest('Mobile')
                 } else {
-                    const otp = await this.triggerEmail(requestBody.username, 1, 'no');
-                    if (otp instanceof Error) {
-                        throw otp;
+                    const otp: any = Math.random().toFixed(6).substr(-6);
+                    const SMSResutl = await this.triggerSms(requestBody.mobile, 'PJrRXxYT', '1007215696892321355', `Dear%20Guide%20Teacher,%20your%20OTP%20to%20register%20for%20SIDP%2024-25%20is%20${otp}.%20Thank%20you%20for%20inspiring%20students%20through%20design%20thinking%20and%20innovation.%20%E2%80%93EDITN`);
+                    if (SMSResutl instanceof Error) {
+                        throw SMSResutl;
                     }
-                    const hashedPassword = await this.encryptGlobal(JSON.stringify(otp.otp));
+                    const hashedPassword = await this.encryptGlobal(JSON.stringify(otp));
                     result.data = hashedPassword;
                     return result;
                 }
@@ -425,6 +426,19 @@ export default class authService {
             return error;
         }
     }
+
+    async triggerSms(mobile: any, apikey: any, tempId: any, content: any) {
+        try {
+            const url = `https://tmegov.onex-aura.com/api/sms?key=${apikey}&to=${mobile}&from=IEDPTN&body=${content}&entityid=1001140214959840752&templateid=${tempId}`
+            console.log(url, "p");
+            let result = axios.get(url);
+            return result
+        }
+        catch (error) {
+            return error
+        }
+    }
+
     /**
      * Get the mentor details with the mobile number, trigger OTP and update the password
      * @param requestBody 
@@ -442,8 +456,8 @@ export default class authService {
                     where: { username: requestBody.username }
                 });
             } else {
-                mentor_res = await this.crudService.findOne(user, {
-                    where: { username: requestBody.email }
+                mentor_res = await this.crudService.findOne(mentor, {
+                    where: { mobile: requestBody.mobile }
                 });
             }
             if (!mentor_res) {
@@ -460,9 +474,11 @@ export default class authService {
                 passwordNeedToBeUpdated['otp'] = word;
                 passwordNeedToBeUpdated["messageId"] = speeches.AWSMESSAGEID
             } else {
-                const otpOBJ = await this.triggerEmail(requestBody.email, 3, 'no');
-                passwordNeedToBeUpdated['otp'] = otpOBJ.otp;
-                passwordNeedToBeUpdated['messageId'] = otpOBJ.messageId
+                const otp: any = Math.random().toFixed(6).substr(-6);
+                const otpOBJ: any = await this.triggerSms(requestBody.mobile, 'a7GEb0Tq', '1007553654330136215', `Dear%20Guide%20Teacher,%20your%20temporary%20password%20for%20SIDP%20is%20${otp}.%20Login%20at%20https%3A%2F%2Fsidp.editn.in%2Flogin%20and%20change%20your%20password%20after%20first%20login.%20%E2%80%93EDITN`);
+                console.log(otpOBJ.data);
+                passwordNeedToBeUpdated['otp'] = otp;
+                passwordNeedToBeUpdated['messageId'] = otpOBJ.data.messageid
                 if (passwordNeedToBeUpdated instanceof Error) {
                     throw passwordNeedToBeUpdated;
                 }
@@ -831,7 +847,7 @@ export default class authService {
     async triggerBulkEmail(email: any, textBody: any, subText: any) {
         const result: any = {}
         let proxyAgent = new HttpsProxyAgent('http://10.236.241.101:9191');
-       if (process.env.ISAWSSERVER === 'YES') {
+        if (process.env.ISAWSSERVER === 'YES') {
             AWS.config.update({
                 region: 'ap-south-1',
                 accessKeyId: process.env.AWS_ACCESS_KEY_ID,

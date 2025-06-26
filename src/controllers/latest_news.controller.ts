@@ -40,12 +40,12 @@ export default class LatestNewsController extends BaseController {
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            let { category, state } = newREQQuery;
+            let { category, district } = newREQQuery;
             let data: any = {}
             const where: any = {};
             where[`status`] = "ACTIVE";
-            if (state !== 'All States' && state !== undefined) {
-                where[`state`] = state;
+            if (district !== 'All Districts' && district !== undefined) {
+                where[`district`] = district;
             }
             if (category !== 'All categorys' && category !== undefined) {
                 where[`category`] = category;
@@ -62,7 +62,7 @@ export default class LatestNewsController extends BaseController {
                         "url",
                         "file_name",
                         "new_status",
-                        "state",
+                        "district",
                         "updated_at"
                     ],
                     where: [where]
@@ -77,13 +77,13 @@ export default class LatestNewsController extends BaseController {
                         "url",
                         "file_name",
                         "new_status",
-                        "state",
+                        "district",
                         "updated_at"
                     ],
                     where: [where]
                 })
                 if (data.length <= 0) {
-                    where[`state`] = "All States"
+                    where[`district`] = "All Districts"
                     data = await this.crudService.findAll(latest_news, {
                         attributes: [
                             "latest_news_id",
@@ -92,7 +92,7 @@ export default class LatestNewsController extends BaseController {
                             "url",
                             "file_name",
                             "new_status",
-                            "state",
+                            "district",
                             "updated_at"
                         ],
                         where: [where]

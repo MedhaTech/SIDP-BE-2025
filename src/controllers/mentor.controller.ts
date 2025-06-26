@@ -36,7 +36,7 @@ export default class MentorController extends BaseController {
         this.router.put(`${this.path}/changePassword`, this.changePassword.bind(this));
         this.router.delete(`${this.path}/:mentor_user_id/deleteAllData`, this.deleteAllData.bind(this));
         this.router.put(`${this.path}/resetPassword`, this.resetPassword.bind(this));
-        this.router.post(`${this.path}/emailOtp`, this.emailOtp.bind(this));
+        this.router.post(`${this.path}/mobileOtp`, this.mobileOtp.bind(this));
         this.router.get(`${this.path}/mentorpdfdata`, this.mentorpdfdata.bind(this));
         this.router.post(`${this.path}/triggerWelcomeEmail`, this.triggerWelcomeEmail.bind(this));
         this.router.post(`${this.path}/:mentor_user_id/badges`, this.addBadgeToMentor.bind(this));
@@ -439,7 +439,7 @@ export default class MentorController extends BaseController {
     }
 
     //sending otp to user at the time of registration
-    private async emailOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    private async mobileOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { username } = req.body;
             if (!username) {
@@ -456,7 +456,7 @@ export default class MentorController extends BaseController {
                     return res.status(404).send(dispatcher(res, result.error, 'error', result.error));
                 }
             } else {
-                return res.status(202).send(dispatcher(res, result.data, 'accepted', speeches.OTP_SEND_EMAIL, 202));
+                return res.status(202).send(dispatcher(res, result.data, 'accepted', speeches.OTP_SEND, 202));
             }
         } catch (error) {
             next(error)
@@ -466,11 +466,11 @@ export default class MentorController extends BaseController {
     //reseting mentor password to default 
     private async resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const { email, username, otp } = req.body;
+            const { mobile, username, otp } = req.body;
             let otpCheck = typeof otp == 'boolean' && otp == false ? otp : true;
             if (otpCheck) {
-                if (!email) {
-                    throw badRequest(speeches.USER_EMAIL_REQUIRED);
+                if (!mobile) {
+                    throw badRequest(speeches.MOBILE_NUMBER_REQUIRED);
                 }
             } else {
                 if (!username) {
