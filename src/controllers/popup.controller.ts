@@ -120,12 +120,12 @@ export default class popupController extends BaseController {
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            let { role, state } = newREQQuery;
+            let { role, district } = newREQQuery;
             let data: any = {}
             const where: any = {};
             where[`status`] = "ACTIVE";
-            if (state !== 'All States' && state !== undefined) {
-                where[`state`] = state;
+            if (district !== 'All Districts' && district !== undefined) {
+                where[`district`] = district;
             }
             if (role !== 'All roles' && role !== undefined) {
                 where[`role`] = role;
@@ -143,7 +143,7 @@ export default class popupController extends BaseController {
                     where: [where]
                 })
                 if (data.length <= 0) {
-                    where[`state`] = "All States"
+                    where[`district`] = "All Districts"
                     data = await this.crudService.findAll(popup, {
                         where: [where]
                     })

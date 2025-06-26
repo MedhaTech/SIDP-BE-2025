@@ -15,8 +15,8 @@ export const resourceSchema = Joi.object().keys({
     attachments: Joi.string().required().messages({
         'string.empty': speeches.ID_REQUIRED
     }),
-    state: Joi.string().required().regex(constents.ALPHA_NUMERIC_PATTERN).messages({
-        'string.empty': speeches.STATE_REQ
+    district: Joi.string().required().regex(constents.ALPHA_NUMERIC_PATTERN).messages({
+        'string.empty': speeches.DISTRICT_REQ
     }),
 });
 
@@ -35,5 +35,5 @@ export const resourceUpdateSchema = Joi.object().keys({
         'string.empty': speeches.ID_REQUIRED
     }),
     attachments: Joi.any(),
-    state: Joi.string().regex(constents.ALPHA_NUMERIC_PATTERN)
+    district: Joi.string().regex(constents.ALPHA_NUMERIC_PATTERN)
 });

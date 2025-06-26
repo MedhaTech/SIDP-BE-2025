@@ -10,7 +10,7 @@ export const popupSchema = Joi.object().keys({
     youtube:Joi.string().trim().allow(null).allow(''),
     role: Joi.string().required().regex(constents.ALPHA_NUMERIC_PATTERN),
     navigate:Joi.string().regex(constents.ALPHA_NUMERIC_PATTERN_PLUS_SLASH).allow(null).allow(''),
-    state:Joi.string().required().regex(constents.ALPHA_NUMERIC_PATTERN)
+    district:Joi.string().required().regex(constents.ALPHA_NUMERIC_PATTERN)
 });
 
 export const popupUpdateSchema = Joi.object().keys({
@@ -25,5 +25,5 @@ export const popupUpdateSchema = Joi.object().keys({
     youtube:Joi.string().trim().allow(null).allow(''),
     role: Joi.string().regex(constents.ALPHA_NUMERIC_PATTERN),
     navigate:Joi.string().regex(constents.ALPHA_NUMERIC_PATTERN_PLUS_SLASH).allow(null).allow(''),
-    state:Joi.string().regex(constents.ALPHA_NUMERIC_PATTERN)
+    district:Joi.string().regex(constents.ALPHA_NUMERIC_PATTERN)
 });
