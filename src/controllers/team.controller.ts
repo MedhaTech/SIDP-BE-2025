@@ -140,11 +140,11 @@ export default class TeamController extends BaseController {
             }
 
             const ideaStatus = newREQQuery.ideaStatus;
-            let state: any = newREQQuery.state;
-            let stateFilter: any = {}
-            if (state) {
-                stateFilter['whereClause'] = state && typeof state == 'string' && state !== 'All States' ? { state } : {}
-                stateFilter["liter"] = state && typeof state == 'string' && state !== 'All States' ? db.literal('`mentor->organization`.`state` = ' + JSON.stringify(state)) : {}
+            let district: any = newREQQuery.district;
+            let districtFilter: any = {}
+            if (district) {
+                districtFilter['whereClause'] = district && typeof district == 'string' && district !== 'All Districts' ? { district } : {}
+                districtFilter["liter"] = district && typeof district == 'string' && district !== 'All Districts' ? db.literal('`mentor->organization`.`district` = ' + JSON.stringify(district)) : {}
             }
             if (id) {
                 const newParamId: any = await this.authService.decryptGlobal(req.params.id);
@@ -226,7 +226,7 @@ export default class TeamController extends BaseController {
                                 [Op.and]: [
                                     whereClauseStatusPart,
                                     condition,
-                                    stateFilter.liter
+                                    districtFilter.liter
                                 ]
                             },
                             include: [
@@ -237,7 +237,7 @@ export default class TeamController extends BaseController {
                                         'full_name'
                                     ],
                                     include: {
-                                        where: stateFilter.whereClause,
+                                        where: districtFilter.whereClause,
                                         required: false,
                                         model: organization,
                                         attributes: [
@@ -276,7 +276,7 @@ export default class TeamController extends BaseController {
                                 [Op.and]: [
                                     whereClauseStatusPart,
                                     condition,
-                                    stateFilter.liter
+                                    districtFilter.liter
                                 ]
                             },
                             include: [
@@ -286,7 +286,7 @@ export default class TeamController extends BaseController {
                                         'full_name'
                                     ],
                                     include: {
-                                        where: stateFilter.whereClause,
+                                        where: districtFilter.whereClause,
                                         required: false,
                                         model: organization,
                                         attributes: [

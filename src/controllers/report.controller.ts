@@ -57,17 +57,17 @@ export default class ReportController extends BaseController {
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const state = newREQQuery.state;
+            const district = newREQQuery.district;
             let summary
             let REG_school
             let cat_gender
-            if (state) {
+            if (district) {
                 const categorydata = await db.query(`SELECT DISTINCT
                     category
                         FROM
                     organizations
                     WHERE
-                state = '${state}'`, { type: QueryTypes.SELECT });
+                district = '${district}'`, { type: QueryTypes.SELECT });
                 const querystring: any = await this.authService.combinecategory(categorydata);
                 summary = await db.query(`SELECT 
     o.district, COALESCE(eli.Eligible_school,0) as Eligible_school
@@ -80,11 +80,11 @@ FROM
         organizations
     WHERE
         status = 'ACTIVE'
-            && state = '${state}'
+            && district = '${district}'
     GROUP BY district) AS eli ON o.district = eli.district
 WHERE
 o.status = 'ACTIVE' &&
-    o.state = '${state}'
+    o.district = '${district}'
 GROUP BY district ORDER BY district`, { type: QueryTypes.SELECT });
                 REG_school = await db.query(`SELECT 
     COUNT(DISTINCT m.organization_code) AS reg_school,
@@ -95,7 +95,7 @@ FROM
     organizations AS o ON m.organization_code = o.organization_code
 WHERE
     o.status = 'ACTIVE'
-        && o.state = '${state}'
+        && o.district = '${district}'
         GROUP BY district;`, { type: QueryTypes.SELECT });
                 cat_gender = await db.query(`
                     SELECT 
@@ -128,7 +128,7 @@ FROM
     organizations AS o ON m.organization_code = o.organization_code
 WHERE
     o.status = 'ACTIVE'
-        && o.state = '${state}'
+        && o.district = '${district}'
 GROUP BY o.district
                     `, { type: QueryTypes.SELECT });
                 const result = await this.authService.totalofREGsummary(summary, REG_school, cat_gender, querystring.categoryList)
@@ -246,7 +246,7 @@ GROUP BY o.state`, { type: QueryTypes.SELECT });
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const { page, size, status, district, category, state } = newREQQuery;
+            const { page, size, district, category} = newREQQuery;
             const { limit, offset } = this.getPagination(page, size);
             const paramStatus: any = newREQQuery.status;
             let whereClauseStatusPart: any = {};
@@ -272,10 +272,7 @@ GROUP BY o.state`, { type: QueryTypes.SELECT });
             if (category !== 'All Categories' && category !== undefined) {
                 districtFilter['category'] = category
             }
-            if (state !== 'All States' && state !== undefined) {
-                districtFilter['state'] = state
-            }
-
+    
             const mentorsResult = await mentor.findAll({
                 attributes: [
                     "full_name",
@@ -348,17 +345,13 @@ GROUP BY o.state`, { type: QueryTypes.SELECT });
 
             let districtFilter: any = `'%%'`
             let categoryFilter: any = `'%%'`
-            let stateFilter: any = `'%%'`
             if (district !== 'All Districts' && district !== undefined) {
                 districtFilter = `'${district}'`
             }
             if (category !== 'All Categories' && category !== undefined) {
                 categoryFilter = `'${category}'`
             }
-            if (state !== 'All States' && state !== undefined) {
-                stateFilter = `'${state}'`
-            }
-
+           
             const mentorsResult = await db.query(`SELECT 
             organization_id,
             organization_code,
@@ -377,7 +370,7 @@ GROUP BY o.state`, { type: QueryTypes.SELECT });
             address,
             principal_name,
             principal_mobile,
-            principal_email FROM organizations WHERE status='ACTIVE' && district LIKE ${districtFilter} && category LIKE ${categoryFilter} && state LIKE ${stateFilter} && NOT EXISTS(SELECT mentors.organization_code  from mentors WHERE organizations.organization_code = mentors.organization_code) `, { type: QueryTypes.SELECT });
+            principal_email FROM organizations WHERE status='ACTIVE' && district LIKE ${districtFilter} && category LIKE ${categoryFilter} && NOT EXISTS(SELECT mentors.organization_code  from mentors WHERE organizations.organization_code = mentors.organization_code) `, { type: QueryTypes.SELECT });
             if (!mentorsResult) {
                 throw notFound(speeches.DATA_NOT_FOUND)
             }
@@ -1471,7 +1464,7 @@ FROM
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const { state, district, theme, category } = newREQQuery;
+            const {district, category } = newREQQuery;
             const where: any = {
                 status: 'ACTIVE',
             };
@@ -1480,9 +1473,6 @@ FROM
             }
             if (category !== 'All Categories' && category !== undefined) {
                 where['category'] = category
-            }
-            if (state !== 'All States' && state !== undefined) {
-                where['state'] = state
             }
             try {
                 data = await this.crudService.findAll(organization, {

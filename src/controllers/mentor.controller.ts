@@ -88,10 +88,10 @@ export default class MentorController extends BaseController {
                 whereClauseStatusPart = { "status": "ACTIVE" };
                 boolStatusWhereClauseRequired = true;
             };
-            let state: any = newREQQuery.state;
-            let whereClauseOfState: any = state && state !== 'All States' ?
-                { state: { [Op.like]: newREQQuery.state } } :
-                { state: { [Op.like]: `%%` } }
+            let district: any = newREQQuery.district;
+            let whereClauseOfDistrict: any = district && district !== 'All Districts' ?
+                { district: { [Op.like]: newREQQuery.district } } :
+                { district: { [Op.like]: `%%` } }
             if (id) {
                 const deValue: any = await this.authService.decryptGlobal(req.params.id);
                 where[`${this.model}_id`] = JSON.parse(deValue);
@@ -167,7 +167,7 @@ export default class MentorController extends BaseController {
                                 "school_type",
                                 "board",
                                 "pin_code"
-                            ], where: whereClauseOfState,
+                            ], where: whereClauseOfDistrict,
                             require: false
                         }, limit, offset
                     })
@@ -297,6 +297,7 @@ export default class MentorController extends BaseController {
                 result.data['mentor_id'] = mentorData.dataValues.mentor_id;
                 result.data['organization_name'] = mentorData.dataValues.organization.organization_name;
                 result.data['state'] = mentorData.dataValues.organization.state;
+                result.data['district'] = mentorData.dataValues.organization.district;
                 result.data['title'] = mentorData.dataValues.title;
                 result.data['gender'] = mentorData.dataValues.gender;
                 return res.status(200).send(dispatcher(res, result.data, 'success', speeches.USER_LOGIN_SUCCESS));
