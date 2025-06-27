@@ -84,11 +84,11 @@ export default class StudentController extends BaseController {
                 whereClauseStatusPart = { "status": "ACTIVE" };
                 boolStatusWhereClauseRequired = true;
             };
-            let state: any = newREQQuery.state;
-            let stateFilter: any = {}
-            if (state) {
-                stateFilter['whereClause'] = state && typeof state == 'string' && state !== 'All States' ? { state } : {}
-                stateFilter["liter"] = state && typeof state == 'string' && state !== 'All States' ? db.literal('`team->mentor->organization`.`state` = ' + JSON.stringify(state)) : {}
+            let district: any = newREQQuery.district;
+            let districtFilter: any = {}
+            if (district) {
+                districtFilter['whereClause'] = district && typeof district == 'string' && district !== 'All Districts' ? { district } : {}
+                districtFilter["liter"] = district && typeof district == 'string' && district !== 'All Districts' ? db.literal('`team->mentor->organization`.`district` = ' + JSON.stringify(district)) : {}
             }
             if (id) {
                 const newParamId = await this.authService.decryptGlobal(req.params.id);
@@ -158,7 +158,7 @@ export default class StudentController extends BaseController {
                             [Op.and]: [
                                 whereClauseStatusPart,
                                 // condition,
-                                stateFilter.liter
+                                districtFilter.liter
                             ]
                         },
                         include: {
@@ -176,7 +176,7 @@ export default class StudentController extends BaseController {
                                         'full_name'
                                     ],
                                     include: {
-                                        where: stateFilter.whereClause,
+                                        where: districtFilter.whereClause,
                                         required: false,
                                         model: organization,
                                         attributes: [
