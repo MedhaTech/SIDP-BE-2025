@@ -430,7 +430,6 @@ export default class authService {
     async triggerSms(mobile: any, apikey: any, tempId: any, content: any) {
         try {
             const url = `https://tmegov.onex-aura.com/api/sms?key=${apikey}&to=${mobile}&from=IEDPTN&body=${content}&entityid=1001140214959840752&templateid=${tempId}`
-            console.log(url, "p");
             let result = axios.get(url);
             return result
         }
@@ -476,7 +475,6 @@ export default class authService {
             } else {
                 const otp: any = Math.random().toFixed(6).substr(-6);
                 const otpOBJ: any = await this.triggerSms(requestBody.mobile, 'a7GEb0Tq', '1007553654330136215', `Dear%20Guide%20Teacher,%20your%20temporary%20password%20for%20SIDP%20is%20${otp}.%20Login%20at%20https%3A%2F%2Fsidp.editn.in%2Flogin%20and%20change%20your%20password%20after%20first%20login.%20%E2%80%93EDITN`);
-                console.log(otpOBJ.data);
                 passwordNeedToBeUpdated['otp'] = otp;
                 passwordNeedToBeUpdated['messageId'] = otpOBJ.data.messageid
                 if (passwordNeedToBeUpdated instanceof Error) {
@@ -506,37 +504,18 @@ export default class authService {
     async triggerWelcome(requestBody: any) {
         let result: any = {};
         try {
-            const { school_name, udise_code, district, state, pin_code, email, mobile } = requestBody;
+            const { email, mobile } = requestBody;
             var pass = email.trim();
             var myArray = pass.split('@');
             let word = myArray[0];
-            const WelcomeTemp = `
-            <body style="border: solid;margin-right: 15%;margin-left: 15%; ">
-            <img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Untitled+design.jpg" alt="header" style="width: 100%;" />
-            <div style="padding: 1% 5%;">
-            <h3>Dear Guide Teacher,</h3>
-            <h4>Congratulations for successfully registering for School Innovation Development Project 24-25</h4>
-            <p>Your schools has been successfully registered with the following details :
-            <br> School name: <strong> ${school_name}</strong> <br> UDISE CODE:<strong> ${udise_code}</strong>
-            <br> District:<strong> ${district}</strong>
-             <br> State:<strong> ${state}</strong>
-             <br> Pincode:<strong> ${pin_code}</strong>
-            </p>
-            <p> Below are your log-in details: </p>
-            <p> Login User ID: <strong> ${email} </strong>
-            <br>
-            Password: <strong>  ${word}
-            </strong> <br>
-            Mobile no: <strong> ${mobile} </strong>
-            <p>Please use your user id and password to login and proceed further.</p>
-            <p><strong>Link: https://sidp.editn.in//login</strong></p>
-            <p><strong>Regards,<br> SIDP Team</strong></p>
-            </div></body>`
-            const otp = await this.triggerEmail(email, 2, WelcomeTemp);
+            const otp: any = await this.triggerSms(mobile, 'a7GEb0Tq', '1007066758341573003', `Dear%20Guide%20Teacher,%20your%20school%20is%20registered%20for%20SIDP%2024%E2%80%9325.%20Login:%20${email}%20%7C%20PW:%20${word}%7C%20Mob:%20${mobile}%20%7C%20https%3A%2F%2Fsidp.editn.in%2Flogin%20%E2%80%93%20EDITN`);
             if (otp instanceof Error) {
                 throw otp;
             }
-            result.data = 'Email sent successfully'
+            result['data'] = {
+                'messageId': otp.data.messageid,
+                'MSG': 'SMS sent successfully'
+            }
             return result;
         } catch (error) {
             result['error'] = error;
@@ -910,64 +889,27 @@ export default class authService {
             return error;
         }
     }
-    async triggerteamDeatils(requestBody: any, email: any) {
+    async triggerteamDeatils(requestBody: any, mobile: any) {
         let result: any = {};
         try {
             let allstring: String = ''
+            let teamName: String = ''
+            let UserName: String = ''
             for (let x in requestBody) {
                 let password = requestBody[x].team_name.replace(/\s/g, '');
                 requestBody[x].password = password.toLowerCase();
-                allstring += `<tr><td>${parseInt(x) + 1}</td><td>${requestBody[x].team_name}</td><td>${requestBody[x].username}</td><td>${requestBody[x].password}</td></tr>`
+                teamName += `${requestBody[x].team_name},`
+                UserName += `${requestBody[x].username},`
+                allstring += `${requestBody[x].password},`
             }
-            const WelcomeTemp = `
-            <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Credentials</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body style="border: solid;margin-right: 15%;margin-left: 15%;">
-<img src="https://aim-email-images.s3.ap-south-1.amazonaws.com/Untitled+design.jpg" alt="header" style="width: 100%;" />
-<div style="padding: 1% 5%;">
-    <h3>Dear Guide Teacher,</h3>
-    <p>Greetings from School Innovation Development Project 2025. Here are your <strong>SIDP student teams credentials</strong> for your reference.</p>
-    <p><strong>Team login URL : https://sidp.editn.in//login</strong></p>
-    <table>
-        <tr>
-            <th>SL No</th>
-            <th>Team Name</th>
-            <th>Team Login ID</th>
-            <th>Team Password</th>
-        </tr>
-        ${allstring}
-    </table>
-    <strong>
-        Regards,<br> SIDP Team
-        </strong>
-</div>
-</body>
-</html>
-`
-            const otp = await this.triggerEmail(email, 4, WelcomeTemp);
+            const otp: any = await this.triggerSms(mobile, 'a7GEb0Tq', '1007082304162142179', `Dear%20Guide%20Teacher,%20your%20SIDP%20student%20team%20credentials:%20https://sidp.editn.in/login%20%7C%20Team:%20${teamName.replace(/,$/, "")}%20%7C%20Login%20ID:%20${UserName.replace(/,$/, "")}%20%7C%20Password:%20${allstring.replace(/,$/, "")}%20%E2%80%93EDITN`);
             if (otp instanceof Error) {
                 throw otp;
             }
-            result.data = 'Email sent successfully'
+            result['data'] = {
+                'messageId': otp.data.messageid,
+                'MSG': 'SMS sent successfully'
+            }
             return result;
         } catch (error) {
             result['error'] = error;

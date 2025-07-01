@@ -38,7 +38,7 @@ export default class MentorController extends BaseController {
         this.router.put(`${this.path}/resetPassword`, this.resetPassword.bind(this));
         this.router.post(`${this.path}/mobileOtp`, this.mobileOtp.bind(this));
         this.router.get(`${this.path}/mentorpdfdata`, this.mentorpdfdata.bind(this));
-        this.router.post(`${this.path}/triggerWelcomeEmail`, this.triggerWelcomeEmail.bind(this));
+        this.router.post(`${this.path}/triggerWelcomeSMS`, this.triggerWelcomeSMS.bind(this));
         this.router.post(`${this.path}/:mentor_user_id/badges`, this.addBadgeToMentor.bind(this));
         this.router.get(`${this.path}/:mentor_user_id/badges`, this.getMentorBadges.bind(this));
         this.router.get(`${this.path}/teamCredentials/:mentorId`, this.getteamCredentials.bind(this));
@@ -300,6 +300,7 @@ export default class MentorController extends BaseController {
                 result.data['district'] = mentorData.dataValues.organization.district;
                 result.data['title'] = mentorData.dataValues.title;
                 result.data['gender'] = mentorData.dataValues.gender;
+                result.data['mobile'] = mentorData.dataValues.mobile;
                 return res.status(200).send(dispatcher(res, result.data, 'success', speeches.USER_LOGIN_SUCCESS));
             }
         } catch (error) {
@@ -582,7 +583,7 @@ export default class MentorController extends BaseController {
         }
     }
     //after successfully mentor registation welcome is send to user
-    protected async triggerWelcomeEmail(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    protected async triggerWelcomeSMS(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const result = await this.authService.triggerWelcome(req.body);
             return res.status(200).send(dispatcher(res, result, 'success'));

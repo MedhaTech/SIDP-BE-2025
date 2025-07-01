@@ -19,7 +19,7 @@ export const wildcardRoutes = [
     "/api/v1/organizations/createOrg",
     "/api/v1/organizations/districts",
     "/api/v1/organizations/states",
-    "/api/v1/mentors/triggerWelcomeEmail",
+    "/api/v1/mentors/triggerWelcomeSMS",
     "/api/v1/teams/login",
     "/api/v1/dashboard/mapStats",
     "/api/v1/dashboard/stateMapStats",
