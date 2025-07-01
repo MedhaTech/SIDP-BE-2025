@@ -806,18 +806,14 @@ GROUP BY og.state
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const { category, district, state } = newREQQuery;
+            const { category, district} = newREQQuery;
             let districtFilter: any = `'%%'`
             let categoryFilter: any = `'%%'`
-            let stateFilter: any = `'%%'`
             if (district !== 'All Districts' && district !== undefined) {
                 districtFilter = `'${district}'`
             }
             if (category !== 'All Categories' && category !== undefined) {
                 categoryFilter = `'${category}'`
-            }
-            if (state !== 'All States' && state !== undefined) {
-                stateFilter = `'${state}'`
             }
             const summary = await db.query(`SELECT 
     mn.mentor_id,
@@ -843,7 +839,7 @@ FROM
         LEFT JOIN
     organizations AS og ON mn.organization_code = og.organization_code
 WHERE
-    og.status = 'ACTIVE' && og.state LIKE ${stateFilter} && og.district LIKE ${districtFilter} && og.category LIKE ${categoryFilter}
+    og.status = 'ACTIVE' && og.district LIKE ${districtFilter} && og.category LIKE ${categoryFilter}
             ORDER BY og.district,mn.full_name;`, { type: QueryTypes.SELECT });
             const preSurvey = await db.query(`SELECT 
         CASE
@@ -995,15 +991,11 @@ GROUP BY mentor_id
             const { category, district, state } = newREQQuery;
             let districtFilter: any = `'%%'`
             let categoryFilter: any = `'%%'`
-            let stateFilter: any = `'%%'`
             if (district !== 'All Districts' && district !== undefined) {
                 districtFilter = `'${district}'`
             }
             if (category !== 'All Categories' && category !== undefined) {
                 categoryFilter = `'${category}'`
-            }
-            if (state !== 'All States' && state !== undefined) {
-                stateFilter = `'${state}'`
             }
             const summary = await db.query(`SELECT 
     student_id,
@@ -1023,7 +1015,7 @@ FROM
         JOIN
     organizations AS og ON mentors.organization_code = og.organization_code
 WHERE
-    og.status = 'ACTIVE' && og.state LIKE ${stateFilter} && og.district LIKE ${districtFilter} && og.category LIKE ${categoryFilter} order by og.district`, { type: QueryTypes.SELECT });
+    og.status = 'ACTIVE' && og.district LIKE ${districtFilter} && og.category LIKE ${categoryFilter} order by og.district`, { type: QueryTypes.SELECT });
             const teamData = await db.query(`SELECT 
     team_id, team_name,team_email, mentor_id,user_id as teamuserId
 FROM
@@ -1210,16 +1202,12 @@ GROUP BY user_id`, { type: QueryTypes.SELECT });
             const { state, district, theme, category } = newREQQuery;
             let districtFilter: any = `'%%'`
             let categoryFilter: any = `'%%'`
-            let stateFilter: any = `'%%'`
             let themesFilter: any = `'%%'`
             if (district !== 'All Districts' && district !== undefined) {
                 districtFilter = `'${district}'`
             }
             if (category !== 'All Categories' && category !== undefined) {
                 categoryFilter = `'${category}'`
-            }
-            if (state !== 'All States' && state !== undefined) {
-                stateFilter = `'${state}'`
             }
             if (theme !== 'All Themes' && theme !== undefined) {
                 themesFilter = `'${theme}'`
@@ -1250,7 +1238,7 @@ GROUP BY user_id`, { type: QueryTypes.SELECT });
 FROM
     challenge_responses as cr join teams as t on cr.team_id = t.team_id join mentors as m on t.mentor_id = m.mentor_id join organizations as org on m.organization_code = org.organization_code
 WHERE
-   org.status = 'ACTIVE' && cr.status = 'SUBMITTED' && org.state LIKE ${stateFilter} && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter};`, { type: QueryTypes.SELECT });
+   org.status = 'ACTIVE' && cr.status = 'SUBMITTED' && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter};`, { type: QueryTypes.SELECT });
             const teamData = await db.query(`SELECT 
     team_id, team_name,team_email, mentor_id,user_id as teamuserId
 FROM
