@@ -674,10 +674,10 @@ WHERE
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const { mentor_id, email } = newREQQuery
+            const { mentor_id, mobile } = newREQQuery
             if (mentor_id) {
                 const teamList = await db.query(`SELECT teams.team_id,team_name,(SELECT username FROM users WHERE user_id = teams.user_id) AS username FROM teams WHERE mentor_id = ${mentor_id} GROUP BY teams.team_id ORDER BY team_id DESC`, { type: QueryTypes.SELECT });
-                result = await this.authService.triggerteamDeatils(teamList, email);
+                result = await this.authService.triggerteamDeatils(teamList, mobile);
             }
             return res.status(200).send(dispatcher(res, result, 'success'));
         }
