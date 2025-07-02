@@ -43,7 +43,7 @@ export default class ReportController extends BaseController {
         this.router.get(`${this.path}/L3deatilreport`, this.getL3Report.bind(this));
 
     }
-    //fetching mentorsummary count for state and all
+    //fetching mentorsummary count for district and all
     protected async mentorsummary(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'REPORT' && res.locals.role !== 'STATE') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -139,28 +139,29 @@ GROUP BY o.district
                 data = transformedArray
             } else {
                 summary = await db.query(`SELECT 
-    o.state, COALESCE(eli.Eligible_school, 0) as Eligible_school
+    o.district, COALESCE(eli.Eligible_school, 0) as Eligible_school
 FROM
     organizations AS o
         LEFT JOIN
     (SELECT 
-        COUNT(*) AS Eligible_school, state
+        COUNT(*) AS Eligible_school, district
     FROM
         organizations
     WHERE
         status = 'ACTIVE'
-    GROUP BY state) AS eli ON o.state = eli.state
+    GROUP BY district) AS eli ON o.district = eli.district
     where o.status ="ACTIVE"
-GROUP BY state ORDER BY state;`, { type: QueryTypes.SELECT });
+GROUP BY district ORDER BY district;`, { type: QueryTypes.SELECT });
                 REG_school = await db.query(`SELECT 
     COUNT(DISTINCT m.organization_code) AS reg_school,
-    o.state
+    o.district
 FROM
     mentors AS m
         JOIN
     organizations AS o ON m.organization_code = o.organization_code
 WHERE
-    o.status = 'ACTIVE' group by state`, { type: QueryTypes.SELECT });
+    o.status = 'ACTIVE'
+GROUP BY district`, { type: QueryTypes.SELECT });
                 cat_gender = await db.query(`SELECT 
     COUNT(CASE
         WHEN
@@ -204,16 +205,15 @@ WHERE
         THEN
             1
     END) AS 'others',
-    o.state
+    o.district
 FROM
     mentors AS m
         RIGHT JOIN
     organizations AS o ON m.organization_code = o.organization_code
 WHERE
     o.status = 'ACTIVE'
-GROUP BY o.state`, { type: QueryTypes.SELECT });
-                const result = await this.authService.totalofREGsummarystate(summary, REG_school, cat_gender)
-
+GROUP BY o.district`, { type: QueryTypes.SELECT });
+                const result = await this.authService.totalofREGsummaryDistrict(summary, REG_school, cat_gender)
                 const transformedArray = Object.entries(result).map(([key, value]) => {
                     const { ...rest }: any = value;
                     return rest;
@@ -382,7 +382,7 @@ GROUP BY o.state`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching mentor detail counts for state and all
+    //fetching mentor detail counts for district and all
     protected async getmentorDetailstable(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'REPORT' && res.locals.role !== 'STATE') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -483,46 +483,50 @@ WHERE
 GROUP BY og.district`, { type: QueryTypes.SELECT });
             } else {
                 summary = await db.query(`SELECT 
-                    og.state, COUNT(mn.mentor_id) AS totalReg
-                FROM
-                    organizations AS og
-                        LEFT JOIN
-                    mentors AS mn ON og.organization_code = mn.organization_code
-                    WHERE og.status='ACTIVE'
-                GROUP BY og.state ORDER BY og.state;`, { type: QueryTypes.SELECT });
+    og.district, COUNT(mn.mentor_id) AS totalReg
+FROM
+    organizations AS og
+        LEFT JOIN
+    mentors AS mn ON og.organization_code = mn.organization_code
+WHERE
+    og.status = 'ACTIVE'
+GROUP BY og.district
+ORDER BY og.district;`, { type: QueryTypes.SELECT });
                 teamCount = await db.query(`SELECT 
-                og.state, COUNT(t.team_id) AS totalTeams
-            FROM
-                organizations AS og
-                    INNER JOIN
-                mentors AS mn ON og.organization_code = mn.organization_code
-                    INNER JOIN
-                teams AS t ON mn.mentor_id = t.mentor_id
-                WHERE og.status='ACTIVE'
-            GROUP BY og.state;`, { type: QueryTypes.SELECT });
+    og.district, COUNT(t.team_id) AS totalTeams
+FROM
+    organizations AS og
+        INNER JOIN
+    mentors AS mn ON og.organization_code = mn.organization_code
+        INNER JOIN
+    teams AS t ON mn.mentor_id = t.mentor_id
+WHERE
+    og.status = 'ACTIVE'
+GROUP BY og.district;`, { type: QueryTypes.SELECT });
                 studentCountDetails = await db.query(`SELECT 
-                og.state,
-                COUNT(st.student_id) AS totalstudent,
-                SUM(CASE
-                    WHEN st.gender = 'MALE' THEN 1
-                    ELSE 0
-                END) AS male,
-                SUM(CASE
-                    WHEN st.gender = 'FEMALE' THEN 1
-                    ELSE 0
-                END) AS female
-            FROM
-                organizations AS og
-                    INNER JOIN
-                mentors AS mn ON og.organization_code = mn.organization_code
-                    INNER JOIN
-                teams AS t ON mn.mentor_id = t.mentor_id
-                    INNER JOIN
-                students AS st ON st.team_id = t.team_id
-                WHERE og.status='ACTIVE'
-            GROUP BY og.state;`, { type: QueryTypes.SELECT });
+    og.district,
+    COUNT(st.student_id) AS totalstudent,
+    SUM(CASE
+        WHEN st.gender = 'MALE' THEN 1
+        ELSE 0
+    END) AS male,
+    SUM(CASE
+        WHEN st.gender = 'FEMALE' THEN 1
+        ELSE 0
+    END) AS female
+FROM
+    organizations AS og
+        INNER JOIN
+    mentors AS mn ON og.organization_code = mn.organization_code
+        INNER JOIN
+    teams AS t ON mn.mentor_id = t.mentor_id
+        INNER JOIN
+    students AS st ON st.team_id = t.team_id
+WHERE
+    og.status = 'ACTIVE'
+GROUP BY og.district;`, { type: QueryTypes.SELECT });
                 courseINcompleted = await db.query(`SELECT 
-    state,COUNT(state) AS courseIN
+    district,COUNT(district) AS courseIN
 FROM
     organizations AS og
         INNER JOIN
@@ -538,10 +542,10 @@ FROM
     HAVING cou < ${baseConfig.MENTOR_COURSE}) AS t ON mn.user_id = t.user_id) AS c ON c.organization_code = og.organization_code
 WHERE
     og.status = 'ACTIVE'
-GROUP BY og.state`, { type: QueryTypes.SELECT });
+GROUP BY og.district`, { type: QueryTypes.SELECT });
                 courseCompleted = await db.query(`
                     SELECT 
-    state,COUNT(state) AS courseCMP
+    district,COUNT(district) AS courseCMP
 FROM
     organizations AS og
         INNER JOIN
@@ -557,7 +561,7 @@ FROM
     HAVING cou >= ${baseConfig.MENTOR_COURSE}) AS t ON mn.user_id = t.user_id) AS c ON c.organization_code = og.organization_code
 WHERE
     og.status = 'ACTIVE'
-GROUP BY og.state
+GROUP BY og.district
                     `, { type: QueryTypes.SELECT });
             }
             data['summary'] = summary;
@@ -577,7 +581,7 @@ GROUP BY og.state
             next(err)
         }
     }
-    //fetching student detail counts for state and all
+    //fetching student detail counts for district and all
     protected async getstudentDetailstable(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'REPORT' && res.locals.role !== 'STATE') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -689,7 +693,7 @@ GROUP BY og.state
                         status = 'DRAFT') AS temp ON te.team_id = temp.team_id WHERE og.status='ACTIVE' ${wherefilter} group by og.district`, { type: QueryTypes.SELECT });
             } else {
                 summary = await db.query(`SELECT 
-                    og.state, COUNT(t.team_id) AS totalTeams
+                    og.district, COUNT(t.team_id) AS totalTeams
                 FROM
                     organizations AS og
                         LEFT JOIN
@@ -697,9 +701,9 @@ GROUP BY og.state
                         LEFT JOIN
                     teams AS t ON mn.mentor_id = t.mentor_id
                     WHERE og.status='ACTIVE'
-                GROUP BY og.state ORDER BY og.state;`, { type: QueryTypes.SELECT });
+                GROUP BY og.district ORDER BY og.district;`, { type: QueryTypes.SELECT });
                 studentCountDetails = await db.query(`SELECT 
-                    og.state,
+                    og.district,
                     COUNT(st.student_id) AS totalstudent
                 FROM
                     organizations AS og
@@ -709,9 +713,9 @@ GROUP BY og.state
                     teams AS t ON mn.mentor_id = t.mentor_id
                         INNER JOIN
                     students AS st ON st.team_id = t.team_id where og.status = 'ACTIVE'
-                GROUP BY og.state;`, { type: QueryTypes.SELECT });
+                GROUP BY og.district;`, { type: QueryTypes.SELECT });
                 courseCompleted = await db.query(`SELECT 
-                    og.state,count(st.student_id) as studentCourseCMP
+                    og.district,count(st.student_id) as studentCourseCMP
                 FROM
                     students AS st
                         JOIN
@@ -726,9 +730,9 @@ GROUP BY og.state
                     FROM
                         user_topic_progress
                     GROUP BY user_id
-                    HAVING COUNT(*) >= ${baseConfig.STUDENT_COURSE}) AS temp ON st.user_id = temp.user_id WHERE og.status='ACTIVE' group by og.state`, { type: QueryTypes.SELECT });
+                    HAVING COUNT(*) >= ${baseConfig.STUDENT_COURSE}) AS temp ON st.user_id = temp.user_id WHERE og.status='ACTIVE' group by og.district`, { type: QueryTypes.SELECT });
                 courseINprogesss = await db.query(`SELECT 
-                    og.state,count(st.student_id) as studentCourseIN
+                    og.district,count(st.student_id) as studentCourseIN
                 FROM
                     students AS st
                         JOIN
@@ -743,9 +747,9 @@ GROUP BY og.state
                     FROM
                         user_topic_progress
                     GROUP BY user_id
-                    HAVING COUNT(*) < ${baseConfig.STUDENT_COURSE}) AS temp ON st.user_id = temp.user_id WHERE og.status='ACTIVE' group by og.state`, { type: QueryTypes.SELECT });
+                    HAVING COUNT(*) < ${baseConfig.STUDENT_COURSE}) AS temp ON st.user_id = temp.user_id WHERE og.status='ACTIVE' group by og.district`, { type: QueryTypes.SELECT });
                 submittedCount = await db.query(`SELECT 
-                    og.state,count(te.team_id) as submittedCount
+                    og.district,count(te.team_id) as submittedCount
                 FROM
                     teams AS te
                         JOIN
@@ -758,9 +762,9 @@ GROUP BY og.state
                     FROM
                         challenge_responses
                     WHERE
-                        status = 'SUBMITTED') AS temp ON te.team_id = temp.team_id WHERE og.status='ACTIVE' group by og.state`, { type: QueryTypes.SELECT });
+                        status = 'SUBMITTED') AS temp ON te.team_id = temp.team_id WHERE og.status='ACTIVE' group by og.district`, { type: QueryTypes.SELECT });
                 draftCount = await db.query(`SELECT 
-                    og.state,count(te.team_id) as draftCount
+                    og.district,count(te.team_id) as draftCount
                 FROM
                     teams AS te
                         JOIN
@@ -773,7 +777,7 @@ GROUP BY og.state
                     FROM
                         challenge_responses
                     WHERE
-                        status = 'DRAFT') AS temp ON te.team_id = temp.team_id WHERE og.status='ACTIVE' group by og.state`, { type: QueryTypes.SELECT });
+                        status = 'DRAFT') AS temp ON te.team_id = temp.team_id WHERE og.status='ACTIVE' group by og.district`, { type: QueryTypes.SELECT });
             }
             data['summary'] = summary;
             data['studentCountDetails'] = studentCountDetails;
@@ -1303,7 +1307,7 @@ FROM
             next(err)
         }
     }
-    //fetching submitted  ideas detail counts for state and all
+    //fetching submitted  ideas detail counts for district and all
     protected async getideaReportTable(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'REPORT' && res.locals.role !== 'STATE') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1375,7 +1379,7 @@ FROM
                 GROUP BY org.district ORDER BY org.district`, { type: QueryTypes.SELECT });
             } else {
                 summary = await db.query(`SELECT 
-                    org.state,
+                    org.district,
                     COALESCE(totalSubmited, 0) AS totalSubmited,
                     COALESCE(SustainableDevelopmentandEnvironment, 0) AS SustainableDevelopmentandEnvironment,
                     COALESCE(DigitalTransformation, 0) AS DigitalTransformation,
@@ -1414,7 +1418,7 @@ FROM
                             COUNT(CASE
                                 WHEN cal.theme = 'Others' THEN 1
                             END) AS OTHERS,
-                            org.state
+                            org.district
                     FROM
                         challenge_responses AS cal
                     JOIN teams AS t ON cal.team_id = t.team_id
@@ -1422,8 +1426,8 @@ FROM
                     JOIN organizations AS org ON m.organization_code = org.organization_code
                     WHERE
                         cal.status = 'SUBMITTED'
-                    GROUP BY org.state) AS t2 ON org.state = t2.state
-                GROUP BY org.state ORDER BY org.state`, { type: QueryTypes.SELECT });
+                    GROUP BY org.district) AS t2 ON org.district = t2.district
+                GROUP BY org.district ORDER BY org.district`, { type: QueryTypes.SELECT });
             }
             data = summary;
             if (!data) {
