@@ -1117,7 +1117,7 @@ export default class authService {
             return err
         }
     }
-    async totalofREGsummarystate(summary: any, REG_school: any, cat_gender: any) {
+    async totalofREGsummaryDistrict(summary: any, REG_school: any, cat_gender: any) {
         try {
             const combinedData: any = {};
             const dataobj: any = {
@@ -1129,12 +1129,12 @@ export default class authService {
                 Female: 0,
                 Male: 0,
                 others: 0,
-                state: "Total"
+                district: "Total"
             };
 
             // Initialize combinedData with summary data
             summary.forEach((entry: any) => {
-                combinedData[entry.state] = {
+                combinedData[entry.district] = {
                     Eligible_school: entry.Eligible_school,
                     reg_school: 0, // Default value
                 };
@@ -1143,17 +1143,17 @@ export default class authService {
 
             // Update with REG_school data
             REG_school.forEach((entry: any) => {
-                if (combinedData[entry.state]) {
-                    combinedData[entry.state].reg_school = entry.reg_school;
+                if (combinedData[entry.district]) {
+                    combinedData[entry.district].reg_school = entry.reg_school;
                     dataobj.reg_school += entry.reg_school
                 }
             });
 
             // Update with cat_gender data
             cat_gender.forEach((entry: any) => {
-                if (combinedData[entry.state]) {
-                    combinedData[entry.state] = {
-                        ...combinedData[entry.state],
+                if (combinedData[entry.district]) {
+                    combinedData[entry.district] = {
+                        ...combinedData[entry.district],
                         ...entry
                     };
                     dataobj.ATL_Reg_Count += entry.ATL_Reg_Count
