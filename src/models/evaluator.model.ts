@@ -10,7 +10,7 @@ export class evaluator extends Model<InferAttributes<evaluator>, InferCreationAt
     declare user_id: string;
     declare full_name: string;
     declare mobile: string;
-    declare state: string;
+    declare district: string;
     declare language: string;
     declare theme: string;
     declare status: Enumerator;
@@ -34,7 +34,7 @@ export class evaluator extends Model<InferAttributes<evaluator>, InferCreationAt
             type: DataTypes.STRING,
             allowNull: false,
         },
-        state: {
+        district: {
             type: DataTypes.TEXT('long')
         },
         mobile: {

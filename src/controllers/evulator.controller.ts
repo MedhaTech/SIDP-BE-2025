@@ -54,7 +54,7 @@ export default class EvaluatorController extends BaseController {
             where[`${this.model}_id`] = JSON.parse(deValue);
             data = await this.crudService.findOne(modelClass, {
                 attributes: [
-                    "evaluator_id", "state", "mobile", "status", "language", "theme",
+                    "evaluator_id", "district", "mobile", "status", "language", "theme",
                 ],
                 where: {
                     [Op.and]: [
@@ -73,7 +73,7 @@ export default class EvaluatorController extends BaseController {
         } else {
             data = await this.crudService.findAll(modelClass, {
                 attributes: [
-                    "evaluator_id", "state", "mobile", "status", "language", "theme",
+                    "evaluator_id", "district", "mobile", "status", "language", "theme",
                 ],
                 include: {
                     model: user,
@@ -145,7 +145,7 @@ export default class EvaluatorController extends BaseController {
         };
 
         const payload = this.autoFillTrackingColumns(req, res, evaluator);
-        payload['state'] = "Andaman and Nicobar Islands,Andhra Pradesh,Arunachal Pradesh,Assam,Bihar,Chandigarh,Chhattisgarh,Dadra and Nagar Haveli and Daman and Diu,Delhi,Goa,Gujarat,Haryana,Himachal Pradesh,Jammu and Kashmir,Jharkhand,Karnataka,Kerala,Ladakh,Lakshadweep,Madhya Pradesh,Maharashtra,Manipur,Meghalaya,Mizoram,Nagaland,Odisha,Puducherry,Punjab,Rajasthan,Sikkim,Tamil Nadu,Telangana,Tripura,Uttar Pradesh,Uttarakhand,West Bengal";
+        payload['district'] = "ARIYALUR,CHENGALPATTU,CHENNAI,COIMBATORE,CUDDALORE,DHARMAPURI,DINDIGUL,ERODE,KALLAKURICHI,KANCHEEPURAM,KANNIYAKUMARI,KARUR,KRISHNAGIRI,MADURAI,MAYILADUTHURAI,NAGAPATTINAM,NAMAKKAL,PERAMBALUR,PUDUKKOTTAI,RAMANATHAPURAM,RANIPET,SALEM,SIVAGANGA,TENKASI,THANJAVUR,THE NILGIRIS,THENI,THIRUVALLUR,THIRUVARUR,THOOTHUKKUDI,TIRUCHIRAPPALLI,TIRUNELVELI,TIRUPATHUR,TIRUPPUR,TIRUVANNAMALAI,VELLORE,VILUPPURAM,VIRUDHUNAGAR";
         payload['language'] = "English,Hindi-हिन्दी,Kannada-ಕೆನಡಾ,Malayalam-മലയാളം,Other Language,Tamil-தமிழ்,Telugu-తెలుగు";
         payload['theme'] = "Sustainable Development and Environment,Digital Transformation,Health and Well-being,Quality Education,Economic Empowerment,Smart and Resilient Communities,Agriculture and Rural Development,Others";
         const result = await this.authService.register(payload);
@@ -231,7 +231,7 @@ export default class EvaluatorController extends BaseController {
             req.body.map(async (evaldata: any, index: any) => {
                 const payload: any = {};
                 payload['role'] = 'EVALUATOR';
-                payload['state'] = evaldata.state;
+                payload['district'] = evaldata.district;
                 payload['language'] = evaldata.language;
                 payload['theme'] = evaldata.theme;
                 payload['full_name'] = evaldata.full_name;

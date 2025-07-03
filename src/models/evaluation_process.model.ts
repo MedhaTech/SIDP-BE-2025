@@ -7,7 +7,7 @@ export class evaluation_process extends Model<InferAttributes<evaluation_process
     declare level_name: string;
     declare no_of_evaluation: number;
     declare eval_schema: Enumerator;
-    declare state: string;
+    declare district: string;
     declare language: string;
     declare theme: string;
     declare status: Enumerator;
@@ -35,7 +35,7 @@ export class evaluation_process extends Model<InferAttributes<evaluation_process
             type: DataTypes.ENUM(...Object.values(constents.evaluation_process_status_flags.list)),
             defaultValue: constents.evaluation_process_status_flags.default
         },
-        state: {
+        district: {
             type: DataTypes.TEXT('long'),
             allowNull: false
         },
