@@ -1552,7 +1552,7 @@ FROM
             next(err)
         }
     }
-    //fetching l1 evaluation detail counts for state and all
+    //fetching l1 evaluation detail counts for district and all
     protected async getL1ReportTable1(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1569,13 +1569,13 @@ FROM
             await db.query(`SET SESSION sql_mode = ''`, {
                 type: QueryTypes.RAW
             });
-            const state = newREQQuery.state;
+            const district = newREQQuery.district;
             let wherefilter = '';
-            if (state) {
-                wherefilter = `WHERE org.state= '${state}'`;
+            if (district) {
+                wherefilter = `WHERE org.district= '${district}'`;
             }
             const summary = await db.query(`SELECT 
-            org.state,
+            org.district,
             COALESCE(totalSubmited, 0) AS totalSubmited,
             COALESCE(accepted, 0) AS accepted,
             COALESCE(rejected, 0) AS rejected
@@ -1584,7 +1584,7 @@ FROM
                 LEFT JOIN
             (SELECT 
                 COUNT(*) AS totalSubmited,
-                    state,
+                    district,
                     COUNT(CASE
                         WHEN evaluation_status = 'SELECTEDROUND1' THEN 1
                     END) AS accepted,
@@ -1595,9 +1595,9 @@ FROM
                 challenge_responses AS cal
             WHERE
                 cal.status = 'SUBMITTED' && cal.verified_status = 'ACCEPTED' 
-            GROUP BY state) AS t2 ON org.state = t2.state
+            GROUP BY district) AS t2 ON org.district = t2.district
             ${wherefilter}
-        GROUP BY org.state`, { type: QueryTypes.SELECT });
+        GROUP BY org.district`, { type: QueryTypes.SELECT });
             data = summary;
             if (!data) {
                 throw notFound(speeches.DATA_NOT_FOUND)
@@ -1610,7 +1610,7 @@ FROM
             next(err)
         }
     }
-    //fetching l1 evaluator detail counts for state and all
+    //fetching l1 evaluator detail counts for district and all
     protected async getL1ReportTable2(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1646,7 +1646,7 @@ GROUP BY evaluator_id`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching l2 evaluation detail counts for state and all
+    //fetching l2 evaluation detail counts for district and all
     protected async getL2ReportTable1(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1674,7 +1674,7 @@ GROUP BY evaluator_id`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching l2 score wise counts fro state and all
+    //fetching l2 score wise counts fro district and all
     protected async getL2ReportTable3(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1691,13 +1691,13 @@ GROUP BY evaluator_id`, { type: QueryTypes.SELECT });
             await db.query(`SET SESSION sql_mode = ''`, {
                 type: QueryTypes.RAW
             });
-            const state = newREQQuery.state;
+            const district = newREQQuery.district;
             let wherefilter = '';
-            if (state) {
-                wherefilter = `WHERE org.state= '${state}'`;
+            if (district) {
+                wherefilter = `WHERE org.district= '${district}'`;
             }
             const summary = await db.query(`SELECT 
-    org.state,
+    org.district,
     COALESCE(count_1to3,0) as count_1to3,
     COALESCE(count_3to5,0) as count_3to5,
     COALESCE(count_5to6,0) as count_5to6,
@@ -1709,7 +1709,7 @@ FROM
     organizations AS org
         LEFT JOIN
     (SELECT 
-        state,
+        district,
             COUNT(CASE
                 WHEN
                     average_score >= 1
@@ -1747,9 +1747,9 @@ FROM
     GROUP BY challenge_response_id
     HAVING COUNT(challenge_response_id) >= 2) AS subquery
     JOIN challenge_responses AS cal ON subquery.challenge_response_id = cal.challenge_response_id
-    GROUP BY state) AS final_count ON org.state = final_count.state
+    GROUP BY district) AS final_count ON org.district = final_count.district
      ${wherefilter}
-GROUP BY org.state
+GROUP BY org.district
         `, { type: QueryTypes.SELECT });
             data = summary;
             if (!data) {
@@ -1764,7 +1764,7 @@ GROUP BY org.state
             next(err)
         }
     }
-    //fetching l2 evaluator detail counts for state and all
+    //fetching l2 evaluator detail counts for district and all
     protected async getL2ReportTable2(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1792,7 +1792,7 @@ GROUP BY evaluators.evaluator_id;`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching l3 evaluation detail counts for state and all
+    //fetching l3 evaluation detail counts for district and all
     protected async getL3ReportTable1(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1824,7 +1824,7 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching l3 evaluator detail counts for state and all
+    //fetching l3 evaluator detail counts for district and all
     protected async getL3ReportTable2(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1838,13 +1838,13 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const state = newREQQuery.state;
+            const district = newREQQuery.district;
             let wherefilter = '';
-            if (state) {
-                wherefilter = `WHERE org.state= '${state}'`;
+            if (district) {
+                wherefilter = `WHERE org.district= '${district}'`;
             }
             const summary = await db.query(`SELECT 
-            org.state,
+            org.district,
             COALESCE((runners + winners),0) AS shortedlisted,
             COALESCE(runners, 0) AS runners,
             COALESCE(winners, 0) AS winners
@@ -1852,7 +1852,7 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             organizations AS org
                 LEFT JOIN
             (SELECT 
-                state,
+                district,
                     COUNT(CASE
                         WHEN final_result = '0' THEN 1
                     END) AS runners,
@@ -1863,9 +1863,9 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
                 challenge_responses AS cal
             WHERE
                 cal.status = 'SUBMITTED'
-            GROUP BY state) AS t2 ON org.state = t2.state
+            GROUP BY district) AS t2 ON org.district = t2.district
             ${wherefilter}
-        GROUP BY org.state`, { type: QueryTypes.SELECT });
+        GROUP BY org.district`, { type: QueryTypes.SELECT });
             data = summary;
             if (!data) {
                 throw notFound(speeches.DATA_NOT_FOUND)
@@ -1878,7 +1878,7 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching l1 evaluation detail report for state and all
+    //fetching l1 evaluation detail report for district and all
     protected async getL1Report(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -1892,10 +1892,9 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const { state, district, theme, category, evaluation_status } = newREQQuery;
+            const { district, theme, category, evaluation_status } = newREQQuery;
             let districtFilter: any = `'%%'`
             let categoryFilter: any = `'%%'`
-            let stateFilter: any = `'%%'`
             let themesFilter: any = `'%%'`
             let evaluationstatusFilter: any = `'%%'`
             if (district !== 'All Districts' && district !== undefined) {
@@ -1903,9 +1902,6 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             }
             if (category !== 'All Categories' && category !== undefined) {
                 categoryFilter = `'${category}'`
-            }
-            if (state !== 'All States' && state !== undefined) {
-                stateFilter = `'${state}'`
             }
             if (theme !== 'All Themes' && theme !== undefined) {
                 themesFilter = `'${theme}'`
@@ -1943,7 +1939,7 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             FROM
                 challenge_responses as cr join teams as t on cr.team_id = t.team_id join mentors as m on t.mentor_id = m.mentor_id join organizations as org on m.organization_code = org.organization_code
             WHERE
-               org.status = 'ACTIVE' && evaluation_status in ('REJECTEDROUND1','SELECTEDROUND1') && org.state LIKE ${stateFilter} && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter} && cr.evaluation_status LIKE ${evaluationstatusFilter};`, { type: QueryTypes.SELECT });
+               org.status = 'ACTIVE' && evaluation_status in ('REJECTEDROUND1','SELECTEDROUND1') && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter} && cr.evaluation_status LIKE ${evaluationstatusFilter};`, { type: QueryTypes.SELECT });
             const teamData = await db.query(`SELECT 
                 team_id, team_name,team_email, mentor_id,user_id as teamuserId
             FROM
@@ -2007,7 +2003,7 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching l2 evaluation detail report for state and all
+    //fetching l2 evaluation detail report for district and all
     protected async getL2Report(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -2021,19 +2017,15 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const { state, district, theme, category } = newREQQuery;
+            const { district, theme, category } = newREQQuery;
             let districtFilter: any = `'%%'`
             let categoryFilter: any = `'%%'`
-            let stateFilter: any = `'%%'`
             let themesFilter: any = `'%%'`
             if (district !== 'All Districts' && district !== undefined) {
                 districtFilter = `'${district}'`
             }
             if (category !== 'All Categories' && category !== undefined) {
                 categoryFilter = `'${category}'`
-            }
-            if (state !== 'All States' && state !== undefined) {
-                stateFilter = `'${state}'`
             }
             if (theme !== 'All Themes' && theme !== undefined) {
                 themesFilter = `'${theme}'`
@@ -2065,7 +2057,7 @@ GROUP BY challenge_response_id;`, { type: QueryTypes.SELECT });
             FROM
                 challenge_responses as cr join teams as t on cr.team_id = t.team_id join mentors as m on t.mentor_id = m.mentor_id join organizations as org on m.organization_code = org.organization_code
             WHERE
-               org.status = 'ACTIVE' && evaluation_status = 'SELECTEDROUND1' && org.state LIKE ${stateFilter} && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter};`, { type: QueryTypes.SELECT });
+               org.status = 'ACTIVE' && evaluation_status = 'SELECTEDROUND1' && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter};`, { type: QueryTypes.SELECT });
             const teamData = await db.query(`SELECT 
                 team_id, team_name,team_email, mentor_id,user_id as teamuserId
             FROM
@@ -2146,7 +2138,7 @@ GROUP BY challenge_response_id`, { type: QueryTypes.SELECT });
             next(err)
         }
     }
-    //fetching l3 evaluation detail report for state and all
+    //fetching l3 evaluation detail report for district and all
     protected async getL3Report(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         if (res.locals.role !== 'ADMIN' && res.locals.role !== 'EADMIN') {
             return res.status(401).send(dispatcher(res, '', 'error', speeches.ROLE_ACCES_DECLINE, 401));
@@ -2160,19 +2152,15 @@ GROUP BY challenge_response_id`, { type: QueryTypes.SELECT });
             } else if (Object.keys(req.query).length !== 0) {
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
-            const { state, district, theme, category } = newREQQuery;
+            const {district, theme, category } = newREQQuery;
             let districtFilter: any = `'%%'`
             let categoryFilter: any = `'%%'`
-            let stateFilter: any = `'%%'`
             let themesFilter: any = `'%%'`
             if (district !== 'All Districts' && district !== undefined) {
                 districtFilter = `'${district}'`
             }
             if (category !== 'All Categories' && category !== undefined) {
                 categoryFilter = `'${category}'`
-            }
-            if (state !== 'All States' && state !== undefined) {
-                stateFilter = `'${state}'`
             }
             if (theme !== 'All Themes' && theme !== undefined) {
                 themesFilter = `'${theme}'`
@@ -2204,7 +2192,7 @@ GROUP BY challenge_response_id`, { type: QueryTypes.SELECT });
             FROM
                 challenge_responses as cr join teams as t on cr.team_id = t.team_id join mentors as m on t.mentor_id = m.mentor_id join organizations as org on m.organization_code = org.organization_code
             WHERE
-               org.status = 'ACTIVE' && final_result <>'null' && org.state LIKE ${stateFilter} && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter};`, { type: QueryTypes.SELECT });
+               org.status = 'ACTIVE' && final_result <>'null' && org.district LIKE ${districtFilter} && org.category LIKE ${categoryFilter} && cr.theme LIKE ${themesFilter};`, { type: QueryTypes.SELECT });
             const teamData = await db.query(`SELECT 
                 team_id, team_name,team_email, mentor_id,user_id as teamuserId
             FROM
