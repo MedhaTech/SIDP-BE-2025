@@ -892,24 +892,18 @@ export default class authService {
     async triggerteamDeatils(requestBody: any, mobile: any) {
         let result: any = {};
         try {
-            let allstring: String = ''
-            let teamName: String = ''
-            let UserName: String = ''
+            let resultvalue: any = {};
             for (let x in requestBody) {
                 let password = requestBody[x].team_name.replace(/\s/g, '');
                 requestBody[x].password = password.toLowerCase();
-                teamName += `${requestBody[x].team_name},`
-                UserName += `${requestBody[x].username},`
-                allstring += `${requestBody[x].password},`
+                const otp: any = await this.triggerSms(mobile, 'a7GEb0Tq', '1007082304162142179', `Dear%20Guide%20Teacher,%20your%20SIDP%20student%20team%20credentials:%20https://sidp.editn.in/login%20%7C%20Team:%20${requestBody[x].team_name}%20%7C%20Login%20ID:%20${requestBody[x].username}%20%7C%20Password:%20${requestBody[x].password}%20%E2%80%93EDITN`);
+                if (otp instanceof Error) {
+                    throw otp;
+                }
+                resultvalue['messageId' + x] = otp.data.messageid;
             }
-            const otp: any = await this.triggerSms(mobile, 'a7GEb0Tq', '1007082304162142179', `Dear%20Guide%20Teacher,%20your%20SIDP%20student%20team%20credentials:%20https://sidp.editn.in/login%20%7C%20Team:%20${teamName.replace(/,$/, "")}%20%7C%20Login%20ID:%20${UserName.replace(/,$/, "")}%20%7C%20Password:%20${allstring.replace(/,$/, "")}%20%E2%80%93EDITN`);
-            if (otp instanceof Error) {
-                throw otp;
-            }
-            result['data'] = {
-                'messageId': otp.data.messageid,
-                'MSG': 'SMS sent successfully'
-            }
+            resultvalue['MSG'] = 'SMS sent successfully';
+            result['data'] = resultvalue;
             return result;
         } catch (error) {
             result['error'] = error;
