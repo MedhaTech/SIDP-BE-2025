@@ -5,7 +5,8 @@ import { organization } from "../models/organization.model";
 import { student } from "../models/student.model";
 import { team } from "../models/team.model";
 import BaseService from "./base.service";
-import { Op } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
+import db from "../utils/dbconnection.util";
 
 export default class DashboardTNService extends BaseService {
     /**
@@ -13,6 +14,9 @@ export default class DashboardTNService extends BaseService {
      * @returns Object 
      */
     async resetTNMapStats() {
+         await db.query(`SET SESSION sql_mode = ''`, {
+                type: QueryTypes.RAW
+            });
         try {
             let uniqueDistricts: any;
             let bulkCreateArray: any = [];
