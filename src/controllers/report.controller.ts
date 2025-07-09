@@ -168,11 +168,11 @@ GROUP BY district`, { type: QueryTypes.SELECT });
                 cat_gender = await db.query(`SELECT 
     COUNT(CASE
         WHEN
-            o.category = 'ATL'
+            o.category = 'HSS'
                 AND m.mentor_id <> 'null'
         THEN
             1
-    END) AS 'ATL_Reg_Count',
+    END) AS 'HSS_Reg_Count',
     COUNT(CASE
         WHEN
             o.category = 'Non ATL'
@@ -182,11 +182,11 @@ GROUP BY district`, { type: QueryTypes.SELECT });
     END) AS 'NONATL_Reg_Count',
     COUNT(CASE
         WHEN
-            o.category NOT IN ('ATL' , 'Non ATL')
+            o.category = 'HS'
                 AND m.mentor_id <> 'null'
         THEN
             1
-    END) AS 'Others_Reg_Count',
+    END) AS 'HS_Reg_Count',
     COUNT(CASE
         WHEN
             m.gender = 'Female'
