@@ -430,7 +430,7 @@ export default class authService {
     async triggerSms(mobile: any, apikey: any, tempId: any, content: any) {
         try {
             const url = `https://tmegov.onex-aura.com/api/sms?key=${apikey}&to=${mobile}&from=IEDPTN&body=${content}&entityid=1001140214959840752&templateid=${tempId}`
-            let result = axios.get(url);
+            let result = await fetch(url);
             return result
         }
         catch (error) {
@@ -1117,8 +1117,8 @@ export default class authService {
             const dataobj: any = {
                 Eligible_school: 0,
                 reg_school: 0,
-                ATL_Reg_Count: 0,
-                Others_Reg_Count: 0,
+                HSS_Reg_Count: 0,
+                HS_Reg_Count: 0,
                 NONATL_Reg_Count: 0,
                 Female: 0,
                 Male: 0,
@@ -1150,9 +1150,9 @@ export default class authService {
                         ...combinedData[entry.district],
                         ...entry
                     };
-                    dataobj.ATL_Reg_Count += entry.ATL_Reg_Count
+                    dataobj.HSS_Reg_Count += entry.HSS_Reg_Count
                     dataobj.NONATL_Reg_Count += entry.NONATL_Reg_Count
-                    dataobj.Others_Reg_Count += entry.Others_Reg_Count
+                    dataobj.HS_Reg_Count += entry.HS_Reg_Count
                     dataobj.Female += entry.Female
                     dataobj.Male += entry.Male
                     dataobj.others += entry.others
