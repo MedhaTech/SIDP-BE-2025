@@ -99,7 +99,9 @@ export default class App {
         // cronManager.addJob(new DashboardMapStatsJob())
         // cronManager.addJob(new BadgesJob())
         // cronManager.addJob(new DashboardStateMapStatsJob())
-        cronManager.addJob(new DashboardTNMapStatsJob())
+        if (process.env.pm_id === '0') {
+            cronManager.addJob(new DashboardTNMapStatsJob())
+        }
         cronManager.startAll();
     }
 
