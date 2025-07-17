@@ -677,6 +677,9 @@ WHERE
             const { mentor_id, mobile } = newREQQuery
             if (mentor_id) {
                 const teamList = await db.query(`SELECT teams.team_id,team_name,(SELECT username FROM users WHERE user_id = teams.user_id) AS username FROM teams WHERE mentor_id = ${mentor_id} GROUP BY teams.team_id ORDER BY team_id DESC`, { type: QueryTypes.SELECT });
+                if (teamList.length === 0) {
+                    return res.status(404).send(dispatcher(res, 'No Teams', 'Not found'));
+                }
                 result = await this.authService.triggerteamDeatils(teamList, mobile);
             }
             return res.status(200).send(dispatcher(res, result, 'success'));
