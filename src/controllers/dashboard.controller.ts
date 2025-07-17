@@ -338,7 +338,7 @@ FROM
             const rejected_round_one_count = await db.query("SELECT count(challenge_response_id) as 'rejected_round_one_count' FROM challenge_responses where evaluation_status = 'REJECTEDROUND1'", { type: QueryTypes.SELECT });
             const l2_yet_to_processed = await db.query("SELECT COUNT(*) AS l2_yet_to_processed FROM l1_accepted;", { type: QueryTypes.SELECT });
             const l2_processed = await db.query(`SELECT challenge_response_id, count(challenge_response_id) AS l2_processed FROM evaluator_ratings group by challenge_response_id HAVING COUNT(challenge_response_id) >= ${baseConfig.EVAL_FOR_L2}`, { type: QueryTypes.SELECT });
-            const draft_count = await db.query(`SELECT COUNT(challenge_response_id) AS 'draft_count' FROM challenge_responses WHERE status = 'DRAFT';`,{ type: QueryTypes.SELECT });
+            const draft_count = await db.query(`SELECT COUNT(challenge_response_id) AS 'draft_count' FROM challenge_responses WHERE status = 'DRAFT';`, { type: QueryTypes.SELECT });
             const final_challenges = await db.query("SELECT count(challenge_response_id) as 'final_challenges' FROM evaluation_results where status = 'ACTIVE'", { type: QueryTypes.SELECT });
             const l1_yet_to_process = await db.query(`SELECT COUNT(challenge_response_id) AS l1YetToProcess FROM challenge_responses WHERE (status = 'SUBMITTED' AND verified_status='ACCEPTED') AND evaluation_status is NULL OR evaluation_status = ''`, { type: QueryTypes.SELECT });
             const final_evaluation_challenge = await db.query(`SELECT COUNT(challenge_response_id) FROM challenge_responses WHERE final_result = '0'`, { type: QueryTypes.SELECT });
@@ -1101,18 +1101,18 @@ WHERE
                 return res.status(400).send(dispatcher(res, '', 'error', 'Bad Request', 400));
             }
             const { state } = newREQQuery
-            let ATLCount
+            let HSCount
             let NONATLCount
-            let OthersCount
+            let HSSCount
             if (state) {
-                ATLCount = await db.query(`SELECT 
+                HSCount = await db.query(`SELECT 
                     COUNT(DISTINCT mn.organization_code) AS RegSchools
                 FROM
                     organizations AS og
                         LEFT JOIN
                     mentors AS mn ON og.organization_code = mn.organization_code
                 WHERE
-                    og.status = 'ACTIVE' && og.state='${state}' and og.category = 'ATL';`, { type: QueryTypes.SELECT });
+                    og.status = 'ACTIVE' && og.state='${state}' and og.category = 'HS';`, { type: QueryTypes.SELECT });
                 NONATLCount = await db.query(`SELECT 
                     COUNT(DISTINCT mn.organization_code) AS RegSchools
                 FROM
@@ -1122,23 +1122,33 @@ WHERE
                 WHERE
                     og.status = 'ACTIVE' && og.state='${state}' and og.category = 'Non ATL';`, { type: QueryTypes.SELECT });
 
-                OthersCount = await db.query(`SELECT 
+                HSSCount = await db.query(`SELECT 
                         COUNT(DISTINCT mn.organization_code) AS RegSchools
                     FROM
                         organizations AS og
                             LEFT JOIN
                         mentors AS mn ON og.organization_code = mn.organization_code
                     WHERE
-                        og.status = 'ACTIVE' && og.state='${state}' and og.category NOT IN ('ATL' , 'Non ATL');`, { type: QueryTypes.SELECT });
+                        og.status = 'ACTIVE' && og.state='${state}' and og.category = 'HSS';`, { type: QueryTypes.SELECT });
             } else {
-                ATLCount = await db.query(`SELECT 
-                    COUNT(DISTINCT mn.organization_code) AS RegSchools
-                FROM
-                    organizations AS og
-                        LEFT JOIN
-                    mentors AS mn ON og.organization_code = mn.organization_code
-                WHERE
-                    og.status = 'ACTIVE' and og.category = 'ATL';`, { type: QueryTypes.SELECT });
+                HSSCount = await db.query(`SELECT 
+    COUNT(DISTINCT mn.organization_code) AS HssSchools
+FROM
+    organizations AS og
+        LEFT JOIN
+    mentors AS mn ON og.organization_code = mn.organization_code
+WHERE
+    og.status = 'ACTIVE'
+        AND og.category = 'HSS';`, { type: QueryTypes.SELECT });
+                HSCount = await db.query(`SELECT 
+    COUNT(DISTINCT mn.organization_code) AS HsSchools
+FROM
+    organizations AS og
+        LEFT JOIN
+    mentors AS mn ON og.organization_code = mn.organization_code
+WHERE
+    og.status = 'ACTIVE'
+        AND og.category = 'HS';`, { type: QueryTypes.SELECT });
                 NONATLCount = await db.query(`SELECT 
                     COUNT(DISTINCT mn.organization_code) AS RegSchools
                 FROM
@@ -1147,19 +1157,11 @@ WHERE
                     mentors AS mn ON og.organization_code = mn.organization_code
                 WHERE
                     og.status = 'ACTIVE' and og.category = 'Non ATL';`, { type: QueryTypes.SELECT });
-                OthersCount = await db.query(`SELECT 
-                        COUNT(DISTINCT mn.organization_code) AS RegSchools
-                    FROM
-                        organizations AS og
-                            LEFT JOIN
-                        mentors AS mn ON og.organization_code = mn.organization_code
-                    WHERE
-                        og.status = 'ACTIVE' and og.category NOT IN ('ATL' , 'Non ATL');`, { type: QueryTypes.SELECT });
             }
 
-            result['ATLCount'] = Object.values(ATLCount[0]).toString();
+            result['HSCount'] = Object.values(HSCount[0]).toString();
             result['NONATLCount'] = Object.values(NONATLCount[0]).toString();
-            result['OthersCount'] = Object.values(OthersCount[0]).toString();
+            result['HSSCount'] = Object.values(HSSCount[0]).toString();
             res.status(200).send(dispatcher(res, result, 'done'))
         }
         catch (err) {

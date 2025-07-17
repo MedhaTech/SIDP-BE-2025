@@ -476,7 +476,7 @@ export default class authService {
                 const otp: any = Math.random().toFixed(6).substr(-6);
                 const otpOBJ: any = await this.triggerSms(requestBody.mobile, 'a7GEb0Tq', '1007553654330136215', `Dear%20Guide%20Teacher,%20your%20temporary%20password%20for%20SIDP%20is%20${otp}.%20Login%20at%20https%3A%2F%2Fsidp.editn.in%2Flogin%20and%20change%20your%20password%20after%20first%20login.%20%E2%80%93EDITN`);
                 passwordNeedToBeUpdated['otp'] = otp;
-                passwordNeedToBeUpdated['messageId'] = otpOBJ.data.messageid
+                passwordNeedToBeUpdated['messageId'] = otpOBJ.statusText
                 if (passwordNeedToBeUpdated instanceof Error) {
                     throw passwordNeedToBeUpdated;
                 }
@@ -513,7 +513,7 @@ export default class authService {
                 throw otp;
             }
             result['data'] = {
-                'messageId': otp.data.messageid,
+                'messageId': otp.statusText,
                 'MSG': 'SMS sent successfully'
             }
             return result;
@@ -900,7 +900,7 @@ export default class authService {
                 if (otp instanceof Error) {
                     throw otp;
                 }
-                resultvalue['messageId' + x] = otp.data.messageid;
+                resultvalue['messageId' + x] = otp.statusText;
             }
             resultvalue['MSG'] = 'SMS sent successfully';
             result['data'] = resultvalue;
