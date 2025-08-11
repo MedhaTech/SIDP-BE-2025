@@ -66,12 +66,11 @@ export default class BaseController extends CRUDController {
                 errs.push(`Error uploading file: ${file.originalFilename}`);
             } else {
                 reqData[file.fieldName] = `/assets/${targetResourcePath}/${filename}`;
-                attachments = attachments + `/assets/${targetResourcePath}/${filename},`
+                attachments = attachments + (process.env.ISAWSSERVER === 'YES' ? `http://localhost:8001/assets/${targetResourcePath}/${filename},` : `https://api.sidp.editn.in/assets/${targetResourcePath}/${filename},`)
             }
         }
         result.errors = errs;
         result.attachments = attachments
-
         return result;
     }
 
